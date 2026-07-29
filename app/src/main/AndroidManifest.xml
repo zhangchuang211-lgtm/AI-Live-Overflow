@@ -26,15 +26,15 @@
 
     <application
         android:allowBackup="true"
-        android:label="Operit 桌宠"
+        android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Material3.DayNight.NoActionBar">
+        android:theme="@style/Theme.OperitPet">
 
         <!-- 主 Activity - 权限引导页 -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.Material3.DayNight.NoActionBar">
+            android:theme="@style/Theme.OperitPet">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
