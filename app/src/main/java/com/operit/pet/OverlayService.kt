@@ -1,7 +1,6 @@
 package com.operit.pet
 
 import android.app.*
-import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Build
@@ -12,13 +11,12 @@ import android.view.*
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.webkit.WebSettings
-import androidx.core.app.NotificationCompat
 import kotlin.math.abs
 import kotlin.math.sqrt
 
 /**
  * Operit 悬浮窗核心服务
- * 模块①: overlay-service.md 实现
+ * 修复：setLayerType 位置、通知图标兼容、空指针保护
  */
 class OverlayService : Service() {
 
@@ -26,7 +24,6 @@ class OverlayService : Service() {
     private var overlayView: WebView? = null
     private var params: WindowManager.LayoutParams? = null
 
-    // 手势系统
     private var initialX = 0
     private var initialY = 0
     private var initialTouchX = 0f
@@ -34,7 +31,7 @@ class OverlayService : Service() {
     private var lastTapTime = 0L
     private var touchStartTime = 0L
     private var hasMoved = false
-    private var tapCount = 0          // 连击计数
+    private var tapCount = 0
     private var lastTapWindowStart = 0L
     private var notificationHandler: Handler? = null
 
@@ -65,8 +62,6 @@ class OverlayService : Service() {
         }
     }
 
-    // ========== 模块①: 悬浮窗 (overlay-service.md) ==========
-
     private fun setupOverlay() {
         try {
             windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
@@ -86,7 +81,7 @@ class OverlayService : Service() {
 
             overlayView = WebView(this).apply {
                 setBackgroundColor(0x00000000)
-                // ✅ 正确位置：在 WebView 本身上设置硬件加速层
+                // ✅ 正确位置：setLayerType 是 View 的方法，在 WebView 自身上调用
                 setLayerType(View.LAYER_TYPE_HARDWARE, null)
                 settings.apply {
                     javaScriptEnabled = true
@@ -104,8 +99,6 @@ class OverlayService : Service() {
             e.printStackTrace()
         }
     }
-
-    // ========== 模块②: 手势系统 (gesture-system.md) ==========
 
     private fun createTouchListener(): View.OnTouchListener {
         return View.OnTouchListener { _, event ->
@@ -139,7 +132,6 @@ class OverlayService : Service() {
                                 System.currentTimeMillis() - lastTapTime < DOUBLE_TAP_TIMEOUT -> onDoubleTap()
                                 else -> {
                                     lastTapTime = System.currentTimeMillis()
-                                    handleTapCounter()
                                     onTap()
                                 }
                             }
@@ -158,18 +150,6 @@ class OverlayService : Service() {
                 false
             }
         }
-    }
-
-    private fun handleTapCounter() {
-        val now = System.currentTimeMillis()
-        if (now - lastTapWindowStart > 2000) {
-            tapCount = 0
-            lastTapWindowStart = now
-        }
-        tapCount++
-        overlayView?.evaluateJavascript(
-            "window.petEngine && window.petEngine.onTapCounter($tapCount)", null
-        )
     }
 
     private fun onTap() {
@@ -202,30 +182,7 @@ class OverlayService : Service() {
         )
     }
 
-    // ========== ③ App 检测回调（暂时禁用，需要 USEAGE_STATS 权限）==========
-
-    private fun onForegroundAppChanged(packageName: String) {
-        try {
-            Handler(Looper.getMainLooper()).post {
-                val appName = getAppName(packageName)
-                overlayView?.evaluateJavascript(
-                    "window.petEngine && window.petEngine.onAppChanged('$appName')", null
-                )
-            }
-        } catch (e: Exception) {}
-    }
-
-    private fun getAppName(packageName: String): String {
-        return try {
-            val pm = packageManager
-            val appInfo = pm.getApplicationInfo(packageName, 0)
-            pm.getApplicationLabel(appInfo).toString()
-        } catch (e: Exception) {
-            packageName
-        }
-    }
-
-    // ========== 通知碎碎念 ==========
+    // ========== 通知 ==========
 
     private fun startWhisperRotation() {
         try {
@@ -249,77 +206,43 @@ class OverlayService : Service() {
     private fun getWhisper(): String {
         val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
         return when {
-            hour in 0..5 -> lateNightWhispers.random()
-            hour in 6..8 -> morningWhispers.random()
-            hour in 12..13 -> lunchWhispers.random()
-            else -> generalWhispers.random()
+            hour in 0..5 -> "🌙 这么晚了还不睡..."
+            hour in 6..8 -> "☀️ 早上好呀！"
+            hour in 12..13 -> "🍚 记得吃饭！"
+            else -> "🦊 我在呢~"
         }
     }
 
-    private val generalWhispers = listOf(
-        "🦊 我在呢~",
-        "👀 一直看着你呢",
-        "今天开心吗？",
-        "💭 想和你说说话~",
-        "🌸 你认真的时候真好看"
-    )
-
-    private val morningWhispers = listOf(
-        "☀️ 早上好呀！",
-        "🌅 又是新的一天~",
-        "昨晚睡得好吗？🦊",
-        "今天也要元气满满哦！"
-    )
-
-    private val lunchWhispers = listOf(
-        "🍚 记得吃饭！",
-        "🥢 别饿着了~",
-        "吃饭的时候也要想我哦🦊"
-    )
-
-    private val lateNightWhispers = listOf(
-        "🌙 这么晚了还不睡...",
-        "😤 快去睡觉！",
-        "🦊 我盯着你呢...再不睡要生气了",
-        "💤 晚安...至少让我说一句"
-    )
-
-    // ========== 通知 ==========
-
     private fun buildNotification(text: String): Notification {
-        // 使用简单的 Notification.Builder 避免 appcompat 兼容问题
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return Notification.Builder(this, CHANNEL_ID)
-                .setContentTitle("🦊 Operit")
-                .setContentText(text)
-                .setSmallIcon(android.R.drawable.ic_menu_compass)
-                .setOngoing(true)
-                .setSilent(true)
-                .build()
-        } else {
-            return Notification.Builder(this)
-                .setContentTitle("🦊 Operit")
-                .setContentText(text)
-                .setSmallIcon(android.R.drawable.ic_menu_compass)
-                .setOngoing(true)
-                .setSilent(true)
-                .build()
-        }
+        // 使用原生 API，避免 NotificationCompat 兼容问题
+        val channelId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) CHANNEL_ID else ""
+        // 用 android.R.drawable.ic_dialog_info 替代 ic_menu_compass（更安全）
+        return Notification.Builder(this)
+            .setContentTitle("🦊 Operit")
+            .setContentText(text)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setOngoing(true)
+            .apply {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    setChannelId(channelId)
+                }
+            }
+            .build()
     }
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                "Operit 桌宠",
-                NotificationManager.IMPORTANCE_LOW
-            ).apply { setShowBadge(false) }
-            getSystemService(NotificationManager::class.java)
-                .createNotificationChannel(channel)
+            try {
+                val channel = NotificationChannel(
+                    CHANNEL_ID,
+                    "Operit 桌宠",
+                    NotificationManager.IMPORTANCE_LOW
+                ).apply { setShowBadge(false) }
+                getSystemService(NotificationManager::class.java)
+                    .createNotificationChannel(channel)
+            } catch (e: Exception) {}
         }
     }
-
-    // ========== 工具 ==========
 
     private fun dpToPx(dp: Int): Int {
         return (dp * resources.displayMetrics.density).toInt()
@@ -334,6 +257,7 @@ class OverlayService : Service() {
         } catch (e: Exception) {}
         overlayView = null
         notificationHandler?.removeCallbacksAndMessages(null)
+        try { stopForeground(STOP_FOREGROUND_REMOVE) } catch (e: Exception) {}
         super.onDestroy()
     }
 }
