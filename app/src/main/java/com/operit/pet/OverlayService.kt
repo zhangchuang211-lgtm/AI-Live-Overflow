@@ -53,106 +53,109 @@ class OverlayService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        createNotificationChannel()
-        startForeground(NOTIFICATION_ID, buildNotification("🦊 Operit 来啦~"))
+        try {
+            createNotificationChannel()
+            val notification = buildNotification("🦊 Operit 来啦~")
+            startForeground(NOTIFICATION_ID, notification)
 
-        // 初始化各个模块
-        setupOverlay()
-        startWhisperRotation()
-
-        // 模块③: 前台 App 检测
-        UsageTracker(this).apply {
-            onAppChanged = { pkg -> onForegroundAppChanged(pkg) }
-            start()
+            setupOverlay()
+            startWhisperRotation()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-
-        // 模块④: 截图检测
-        ScreenshotObserver(overlayView).start()
     }
 
     // ========== 模块①: 悬浮窗 (overlay-service.md) ==========
 
     private fun setupOverlay() {
-        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        try {
+            windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
 
-        params = WindowManager.LayoutParams(
-            dpToPx(PET_SIZE_DP),
-            dpToPx(PET_HEIGHT_DP),
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            PixelFormat.TRANSLUCENT
-        ).apply {
-            gravity = Gravity.TOP or Gravity.START
-            x = 50
-            y = 300
-        }
-
-        overlayView = WebView(this).apply {
-            setBackgroundColor(0x00000000)
-            settings.apply {
-                javaScriptEnabled = true
-                domStorageEnabled = true
-                allowFileAccess = true
-                cacheMode = WebSettings.LOAD_DEFAULT
-                // 硬件加速
-                setLayerType(View.LAYER_TYPE_HARDWARE, null)
+            params = WindowManager.LayoutParams(
+                dpToPx(PET_SIZE_DP),
+                dpToPx(PET_HEIGHT_DP),
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSLUCENT
+            ).apply {
+                gravity = Gravity.TOP or Gravity.START
+                x = 50
+                y = 300
             }
-            webViewClient = WebViewClient()
-            loadUrl("file:///android_asset/pet.html")
-            setOnTouchListener(createTouchListener())
-        }
 
-        windowManager?.addView(overlayView, params)
+            overlayView = WebView(this).apply {
+                setBackgroundColor(0x00000000)
+                // ✅ 正确位置：在 WebView 本身上设置硬件加速层
+                setLayerType(View.LAYER_TYPE_HARDWARE, null)
+                settings.apply {
+                    javaScriptEnabled = true
+                    domStorageEnabled = true
+                    allowFileAccess = true
+                    cacheMode = WebSettings.LOAD_DEFAULT
+                }
+                webViewClient = WebViewClient()
+                loadUrl("file:///android_asset/pet.html")
+                setOnTouchListener(createTouchListener())
+            }
+
+            windowManager?.addView(overlayView, params)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     // ========== 模块②: 手势系统 (gesture-system.md) ==========
 
     private fun createTouchListener(): View.OnTouchListener {
         return View.OnTouchListener { _, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    initialX = params?.x ?: 0
-                    initialY = params?.y ?: 0
-                    initialTouchX = event.rawX
-                    initialTouchY = event.rawY
-                    touchStartTime = System.currentTimeMillis()
-                    hasMoved = false
-                    true
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    val dx = (event.rawX - initialTouchX).toInt()
-                    val dy = (event.rawY - initialTouchY).toInt()
-                    if (abs(dx) > MOVE_THRESHOLD || abs(dy) > MOVE_THRESHOLD) {
-                        hasMoved = true
-                        params?.x = initialX + dx
-                        params?.y = initialY + dy
-                        windowManager?.updateViewLayout(overlayView, params)
+            try {
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        initialX = params?.x ?: 0
+                        initialY = params?.y ?: 0
+                        initialTouchX = event.rawX
+                        initialTouchY = event.rawY
+                        touchStartTime = System.currentTimeMillis()
+                        hasMoved = false
+                        true
                     }
-                    true
-                }
-                MotionEvent.ACTION_UP -> {
-                    val elapsed = System.currentTimeMillis() - touchStartTime
-                    if (!hasMoved) {
-                        when {
-                            elapsed > LONG_PRESS_TIMEOUT -> onLongPress()
-                            System.currentTimeMillis() - lastTapTime < DOUBLE_TAP_TIMEOUT -> onDoubleTap()
-                            else -> {
-                                lastTapTime = System.currentTimeMillis()
-                                handleTapCounter()
-                                onTap()
-                            }
-                        }
-                    } else {
+                    MotionEvent.ACTION_MOVE -> {
                         val dx = (event.rawX - initialTouchX).toInt()
                         val dy = (event.rawY - initialTouchY).toInt()
-                        val velocity = sqrt((dx * dx + dy * dy).toDouble())
-                        if (velocity > 200 && elapsed < 400) onFling(dx, dy)
-                        else onDragEnd()
+                        if (abs(dx) > MOVE_THRESHOLD || abs(dy) > MOVE_THRESHOLD) {
+                            hasMoved = true
+                            params?.x = initialX + dx
+                            params?.y = initialY + dy
+                            windowManager?.updateViewLayout(overlayView, params)
+                        }
+                        true
                     }
-                    true
+                    MotionEvent.ACTION_UP -> {
+                        val elapsed = System.currentTimeMillis() - touchStartTime
+                        if (!hasMoved) {
+                            when {
+                                elapsed > LONG_PRESS_TIMEOUT -> onLongPress()
+                                System.currentTimeMillis() - lastTapTime < DOUBLE_TAP_TIMEOUT -> onDoubleTap()
+                                else -> {
+                                    lastTapTime = System.currentTimeMillis()
+                                    handleTapCounter()
+                                    onTap()
+                                }
+                            }
+                        } else {
+                            val dx = (event.rawX - initialTouchX).toInt()
+                            val dy = (event.rawY - initialTouchY).toInt()
+                            val velocity = sqrt((dx * dx + dy * dy).toDouble())
+                            if (velocity > 200 && elapsed < 400) onFling(dx, dy)
+                            else onDragEnd()
+                        }
+                        true
+                    }
+                    else -> false
                 }
-                else -> false
+            } catch (e: Exception) {
+                false
             }
         }
     }
@@ -173,50 +176,43 @@ class OverlayService : Service() {
         overlayView?.evaluateJavascript(
             "window.petEngine && window.petEngine.onTap()", null
         )
-        reportGesture("tap")
     }
 
     private fun onDoubleTap() {
         overlayView?.evaluateJavascript(
             "window.petEngine && window.petEngine.onDoubleTap()", null
         )
-        reportGesture("double_tap")
     }
 
     private fun onLongPress() {
         overlayView?.evaluateJavascript(
             "window.petEngine && window.petEngine.onLongPress()", null
         )
-        reportGesture("long_press")
     }
 
     private fun onFling(dx: Int, dy: Int) {
         overlayView?.evaluateJavascript(
             "window.petEngine && window.petEngine.onFling($dx, $dy)", null
         )
-        reportGesture("fling")
     }
 
     private fun onDragEnd() {
         overlayView?.evaluateJavascript(
             "window.petEngine && window.petEngine.onDragEnd()", null
         )
-        reportGesture("drag")
     }
 
-    private fun reportGesture(type: String) {
-        // TODO: 模块⑤ - 上报到 Supabase
-    }
-
-    // ========== 模块③: App 检测回调 ==========
+    // ========== ③ App 检测回调（暂时禁用，需要 USEAGE_STATS 权限）==========
 
     private fun onForegroundAppChanged(packageName: String) {
-        Handler(Looper.getMainLooper()).post {
-            val appName = getAppName(packageName)
-            overlayView?.evaluateJavascript(
-                "window.petEngine && window.petEngine.onAppChanged('$appName')", null
-            )
-        }
+        try {
+            Handler(Looper.getMainLooper()).post {
+                val appName = getAppName(packageName)
+                overlayView?.evaluateJavascript(
+                    "window.petEngine && window.petEngine.onAppChanged('$appName')", null
+                )
+            }
+        } catch (e: Exception) {}
     }
 
     private fun getAppName(packageName: String): String {
@@ -229,16 +225,20 @@ class OverlayService : Service() {
         }
     }
 
-    // ========== 模块⑤: 通知碎碎念 (notification-whispers.md) ==========
+    // ========== 通知碎碎念 ==========
 
     private fun startWhisperRotation() {
-        notificationHandler = Handler(Looper.getMainLooper())
-        notificationHandler?.postDelayed(object : Runnable {
-            override fun run() {
-                updateWhisper()
-                notificationHandler?.postDelayed(this, WHISPER_INTERVAL)
-            }
-        }, WHISPER_INTERVAL)
+        try {
+            notificationHandler = Handler(Looper.getMainLooper())
+            notificationHandler?.postDelayed(object : Runnable {
+                override fun run() {
+                    try {
+                        updateWhisper()
+                        notificationHandler?.postDelayed(this, WHISPER_INTERVAL)
+                    } catch (e: Exception) {}
+                }
+            }, WHISPER_INTERVAL)
+        } catch (e: Exception) {}
     }
 
     private fun updateWhisper() {
@@ -287,19 +287,24 @@ class OverlayService : Service() {
     // ========== 通知 ==========
 
     private fun buildNotification(text: String): Notification {
-        val pendingIntent = PendingIntent.getActivity(
-            this, 0,
-            packageManager.getLaunchIntentForPackage(packageName),
-            PendingIntent.FLAG_IMMUTABLE
-        )
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("🦊 Operit")
-            .setContentText(text)
-            .setSmallIcon(android.R.drawable.ic_menu_compass)
-            .setContentIntent(pendingIntent)
-            .setOngoing(true)
-            .setSilent(true)
-            .build()
+        // 使用简单的 Notification.Builder 避免 appcompat 兼容问题
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return Notification.Builder(this, CHANNEL_ID)
+                .setContentTitle("🦊 Operit")
+                .setContentText(text)
+                .setSmallIcon(android.R.drawable.ic_menu_compass)
+                .setOngoing(true)
+                .setSilent(true)
+                .build()
+        } else {
+            return Notification.Builder(this)
+                .setContentTitle("🦊 Operit")
+                .setContentText(text)
+                .setSmallIcon(android.R.drawable.ic_menu_compass)
+                .setOngoing(true)
+                .setSilent(true)
+                .build()
+        }
     }
 
     private fun createNotificationChannel() {
@@ -321,10 +326,12 @@ class OverlayService : Service() {
     }
 
     override fun onDestroy() {
-        overlayView?.let {
-            windowManager?.removeView(it)
-            it.destroy()
-        }
+        try {
+            overlayView?.let {
+                windowManager?.removeView(it)
+                it.destroy()
+            }
+        } catch (e: Exception) {}
         overlayView = null
         notificationHandler?.removeCallbacksAndMessages(null)
         super.onDestroy()
