@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:background="#1a1a2e">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🦊"
+        android:textSize="64sp"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Operit 桌宠"
+        android:textSize="28sp"
+        android:textColor="#ffffff"
+        android:textStyle="bold"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="让你的 AI 跳出对话框"
+        android:textSize="14sp"
+        android:textColor="#aaaacc"
+        android:layout_marginBottom="32dp" />
+
+    <TextView
+        android:id="@+id/statusText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🦊 权限状态：\n加载中..."
+        android:textColor="#cccccc"
+        android:textSize="13sp"
+        android:background="#2a2a4e"
+        android:padding="16dp"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/btnOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="🔲 开启悬浮窗权限"
+        android:textAllCaps="false"
+        android:backgroundTint="#e04040" />
+
+    <Button
+        android:id="@+id/btnUsage"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="📊 开启使用情况访问"
+        android:textAllCaps="false"
+        android:backgroundTint="#4040e0"
+        android:layout_marginTop="8dp" />
+
+    <Button
+        android:id="@+id/btnBattery"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="🔋 添加电池白名单"
+        android:textAllCaps="false"
+        android:backgroundTint="#40a040"
+        android:layout_marginTop="8dp" />
+
+    <Button
+        android:id="@+id/btnNotification"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="🔔 开启通知权限"
+        android:textAllCaps="false"
+        android:backgroundTint="#a040a0"
+        android:layout_marginTop="8dp" />
+
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="✨ 启动 Operit 桌宠！"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:backgroundTint="#ff6644"
+        android:layout_marginTop="24dp" />
+
+</LinearLayout>
