@@ -50,6 +50,16 @@ class OverlayService : Service() {
             supabaseSync = SupabaseSync()
 
             createNotificationChannel()
+            // Android 13+ 需要通知权限才能 startForeground
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val nm = getSystemService(NotificationManager::class.java)
+                if (!nm.areNotificationsEnabled()) {
+                    // 没有通知权限时，不启动前台服务，降级为普通悬浮窗
+                    setupOverlay()
+                    startPerceptionSystems()
+                    return
+                }
+            }
             val notification = buildNotification("✨ 我来啦~")
             startForeground(NOTIFICATION_ID, notification)
             setupOverlay()
@@ -57,6 +67,10 @@ class OverlayService : Service() {
             startPerceptionSystems()
         } catch (e: Exception) {
             e.printStackTrace()
+            // 如果前台服务启动失败，尝试以降级模式启动
+            try {
+                setupOverlay()
+            } catch (_: Exception) {}
         }
     }
 
