@@ -14,6 +14,7 @@ class UsageTracker(private val context: Context) {
     private var timer: Timer? = null
     private var lastApp: String = ""
     var onAppChanged: ((String) -> Unit)? = null
+    private val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
 
     fun start() {
         timer = Timer()
@@ -22,7 +23,8 @@ class UsageTracker(private val context: Context) {
                 val current = getForegroundApp()
                 if (current != lastApp && current.isNotEmpty()) {
                     lastApp = current
-                    onAppChanged?.invoke(current)
+                    // 切到主线程回调，避免 WebView 操作崩溃
+                    mainHandler.post { onAppChanged?.invoke(current) }
                 }
             }
         }, 0, 3000)
