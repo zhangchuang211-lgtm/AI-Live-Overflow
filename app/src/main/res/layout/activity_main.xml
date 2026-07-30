@@ -10,14 +10,14 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="🦊"
+        android:text="✨"
         android:textSize="64sp"
         android:layout_marginBottom="8dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Operit 桌宠"
+        android:text="小狐狸桌宠"
         android:textSize="28sp"
         android:textColor="#ffffff"
         android:textStyle="bold"
@@ -35,7 +35,7 @@
         android:id="@+id/statusText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="🦊 权限状态：\n加载中..."
+        android:text="✨ 权限状态：\n加载中..."
         android:textColor="#cccccc"
         android:textSize="13sp"
         android:background="#2a2a4e"
@@ -81,7 +81,7 @@
         android:id="@+id/btnStart"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:text="✨ 启动 Operit 桌宠！"
+        android:text="✨ 启动桌宠！"
         android:textAllCaps="false"
         android:textSize="16sp"
         android:textStyle="bold"

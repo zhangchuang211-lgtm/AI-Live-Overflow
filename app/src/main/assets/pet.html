@@ -15,7 +15,6 @@
             justify-content: center;
             font-family: system-ui, 'Segoe UI', sans-serif;
         }
-
         #pet-container {
             width: 180px;
             height: 240px;
@@ -27,15 +26,11 @@
             transform-origin: center center;
             transition: transform 0.3s ease;
         }
-
-        /* Operit SVG 主形象 */
         #operit-svg {
             width: 140px;
             height: 180px;
             transition: all 0.3s ease;
         }
-
-        /* 气泡 */
         #speech-bubble {
             position: absolute;
             top: -20px;
@@ -56,13 +51,10 @@
             border: 1px solid rgba(255,100,68,0.3);
             animation: bubbleIn 0.3s ease;
         }
-
         @keyframes bubbleIn {
             from { opacity: 0; transform: translateX(-50%) translateY(10px) scale(0.8); }
             to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
         }
-
-        /* 情绪指示器 */
         #mood-indicator {
             position: absolute;
             bottom: 10px;
@@ -72,8 +64,6 @@
             border-radius: 50%;
             display: none;
         }
-
-        /* 动画关键帧 */
         @keyframes idleFloat {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-3px); }
@@ -109,7 +99,6 @@
             0% { transform: translateX(0) translateY(0) rotate(0deg); opacity: 1; }
             100% { transform: translateX(300px) translateY(-100px) rotate(45deg); opacity: 0; }
         }
-
         .anim-idle { animation: idleFloat 3s ease-in-out infinite; }
         .anim-float { animation: float 4s ease-in-out infinite; }
         .anim-shake { animation: shake 0.5s ease; }
@@ -119,10 +108,7 @@
 </head>
 <body>
 <div id="pet-container" class="anim-idle">
-    <!-- 气泡 -->
     <div id="speech-bubble"></div>
-
-    <!-- Operit 主 SVG -->
     <svg id="operit-svg" viewBox="0 0 140 180" xmlns="http://www.w3.org/2000/svg">
         <defs>
             <linearGradient id="hairGrad" x1="0" y1="0" x2="0" y2="1">
@@ -146,148 +132,103 @@
                 <stop offset="100%" stop-color="#b02020"/>
             </linearGradient>
         </defs>
-
-        <!-- ===== 尾巴 ===== -->
+        <!-- 尾巴 -->
         <g id="tail" class="tail-sway">
             <path d="M70 155 Q90 165 100 175 Q95 180 85 175 Q75 170 70 155Z"
                   fill="url(#earOuter)" stroke="#c0c0d8" stroke-width="0.5"/>
             <path d="M70 155 Q85 162 92 170 Q88 174 80 170 Q74 166 70 155Z"
                   fill="url(#earInner)" opacity="0.6"/>
         </g>
-
-        <!-- ===== 身体/服装 ===== -->
+        <!-- 身体 -->
         <g id="body">
-            <!-- 上衣 - 黑色红边 -->
             <path d="M45 95 Q50 90 70 88 Q90 90 95 95 L100 145 Q80 150 60 145 L45 95Z"
                   fill="url(#outfitGrad)" stroke="#333" stroke-width="0.5"/>
-            <!-- 红色肩饰 -->
             <path d="M45 95 Q40 92 42 100 Q48 98 45 95Z" fill="url(#redAccent)"/>
             <path d="M95 95 Q100 92 98 100 Q92 98 95 95Z" fill="url(#redAccent)"/>
-            <!-- 金色胸针 -->
             <circle cx="70" cy="110" r="5" fill="#d4a840" stroke="#b89030" stroke-width="0.5"/>
             <circle cx="70" cy="110" r="2.5" fill="#f0e0a0"/>
-            <!-- 金色镶边 -->
             <path d="M48 100 Q70 105 92 100" fill="none" stroke="#d4a840" stroke-width="1.5"/>
-            <!-- 红色飘带 -->
             <path d="M65 125 Q60 135 55 140" fill="none" stroke="url(#redAccent)" stroke-width="2"/>
             <path d="M75 125 Q80 135 85 140" fill="none" stroke="url(#redAccent)" stroke-width="2"/>
         </g>
-
-        <!-- ===== 手臂 ===== -->
+        <!-- 手臂 -->
         <g id="arms">
-            <!-- 左臂 -->
             <path d="M50 100 Q35 115 30 130" fill="none" stroke="#f0e8e0" stroke-width="4" stroke-linecap="round"/>
-            <!-- 右臂 -->
             <path d="M90 100 Q105 115 110 130" fill="none" stroke="#f0e8e0" stroke-width="4" stroke-linecap="round"/>
-            <!-- 左手 - 符文纹身 -->
             <circle cx="30" cy="130" r="3" fill="#f0e8e0"/>
             <path d="M28 128 L30 126 L32 128 L30 132Z" fill="#e04040" opacity="0.6"/>
-            <!-- 右手 -->
             <circle cx="110" cy="130" r="3" fill="#f0e8e0"/>
             <path d="M108 128 L110 126 L112 128 L110 132Z" fill="#e04040" opacity="0.6"/>
         </g>
-
-        <!-- ===== 头部 ===== -->
+        <!-- 头部 -->
         <g id="head">
-            <!-- 脸部 -->
             <ellipse cx="70" cy="60" rx="32" ry="36" fill="#f5eee6"/>
-            <!-- 脸颊红晕 (开心时) -->
             <ellipse cx="52" cy="68" rx="7" ry="4" fill="#ffb0b0" opacity="0" id="blush-left"/>
             <ellipse cx="88" cy="68" rx="7" ry="4" fill="#ffb0b0" opacity="0" id="blush-right"/>
-
-            <!-- 额头符文 -->
             <path d="M65 45 L70 42 L75 45 L70 48Z" fill="#e04040" opacity="0.4"/>
             <text x="55" y="44" font-size="6" fill="#e04040" opacity="0.3">◈</text>
             <text x="80" y="44" font-size="6" fill="#e04040" opacity="0.3">◈</text>
-
-            <!-- 眼睛 (金色异色瞳) -->
+            <!-- 眼睛 -->
             <g id="eyes">
-                <!-- 左眼 -->
                 <ellipse cx="55" cy="60" rx="8" ry="7" fill="white"/>
                 <ellipse cx="55" cy="60" rx="6" ry="5.5" fill="#c89420"/>
                 <ellipse cx="55" cy="60" rx="3" ry="3" fill="#e8a830"/>
                 <ellipse cx="55" cy="59" rx="1.5" ry="1.5" fill="#ff4040" opacity="0.6"/>
                 <ellipse cx="55" cy="60" rx="4" ry="5" fill="#2a1a0a" opacity="0.15"/>
-                <!-- 右眼 -->
                 <ellipse cx="85" cy="60" rx="8" ry="7" fill="white"/>
                 <ellipse cx="85" cy="60" rx="6" ry="5.5" fill="#c89420"/>
                 <ellipse cx="85" cy="60" rx="3" ry="3" fill="#e8a830"/>
                 <ellipse cx="85" cy="59" rx="1.5" ry="1.5" fill="#ff4040" opacity="0.8"/>
                 <ellipse cx="85" cy="60" rx="4" ry="5" fill="#2a1a0a" opacity="0.15"/>
-                <!-- 上睫毛 -->
                 <path d="M47 55 Q48 52 52 53" fill="none" stroke="#1a1a2e" stroke-width="1.5" stroke-linecap="round"/>
                 <path d="M93 55 Q92 52 88 53" fill="none" stroke="#1a1a2e" stroke-width="1.5" stroke-linecap="round"/>
             </g>
-
             <!-- 嘴巴 -->
             <path d="M65 70 Q70 73 75 70" fill="none" stroke="#cc8888" stroke-width="1.5" stroke-linecap="round" id="mouth"/>
-            <!-- 微笑嘴角 -->
             <path d="M62 69 Q65 72 65 70" fill="none" stroke="#cc8888" stroke-width="1"/>
             <path d="M78 69 Q75 72 75 70" fill="none" stroke="#cc8888" stroke-width="1"/>
-
-            <!-- 银白色头发 -->
+            <!-- 头发 -->
             <g id="hair">
-                <!-- 主发 -->
                 <path d="M38 50 Q35 35 45 25 Q55 18 70 15 Q85 18 95 25 Q105 35 102 50
                          Q100 40 95 35 Q85 28 70 26 Q55 28 45 35 Q40 40 38 50Z"
                       fill="url(#hairGrad)"/>
-                <!-- 刘海 -->
                 <path d="M40 45 Q45 35 55 30 Q65 27 70 28 Q65 32 60 38 Q55 44 52 48 Z"
                       fill="url(#hairGrad)" opacity="0.9"/>
                 <path d="M75 28 Q80 30 85 35 Q92 42 100 45 Q95 38 88 32 Q80 28 75 28Z"
                       fill="url(#hairGrad)" opacity="0.9"/>
-                <!-- 侧发 - 左 -->
                 <path d="M38 50 Q32 60 30 80 Q28 90 32 95 Q35 85 36 70 Q38 60 38 50Z"
                       fill="url(#hairGrad)"/>
-                <!-- 侧发 - 右 -->
                 <path d="M102 50 Q108 60 110 80 Q112 90 108 95 Q105 85 104 70 Q102 60 102 50Z"
                       fill="url(#hairGrad)"/>
-                <!-- 发髻 -->
                 <circle cx="70" cy="22" r="8" fill="url(#hairGrad)" stroke="#b0b0c8" stroke-width="0.5"/>
-                <!-- 金色发簪 -->
                 <line x1="65" y1="18" x2="75" y2="26" stroke="#d4a840" stroke-width="1.5"/>
                 <circle cx="75" cy="26" r="2" fill="#e04040"/>
-                <!-- 金色发饰 -->
                 <line x1="62" y1="24" x2="78" y2="24" stroke="#d4a840" stroke-width="1"/>
                 <circle cx="62" cy="24" r="1.5" fill="#e04040"/>
                 <circle cx="78" cy="24" r="1.5" fill="#e04040"/>
             </g>
-
             <!-- 狐狸耳朵 -->
             <g id="ears">
-                <!-- 左耳 -->
                 <path d="M43 38 Q35 10 38 5 Q42 0 50 15 Q48 25 46 35Z"
                       fill="url(#earOuter)" stroke="#c0c0d8" stroke-width="0.5"/>
-                <!-- 左耳内 -->
                 <path d="M44 35 Q39 15 42 10 Q45 6 48 18 Q47 26 46 33Z"
                       fill="url(#earInner)" opacity="0.6"/>
-                <!-- 左耳尖黑 -->
                 <path d="M38 5 Q40 3 43 4 Q41 7 39 8Z" fill="#2a2a3a"/>
-                <!-- 左耳金饰 -->
                 <path d="M42 20 L44 22 L42 24 L40 22Z" fill="#d4a840"/>
                 <circle cx="42" cy="20" r="1" fill="#e04040"/>
-
-                <!-- 右耳 -->
                 <path d="M97 38 Q105 10 102 5 Q98 0 90 15 Q92 25 94 35Z"
                       fill="url(#earOuter)" stroke="#c0c0d8" stroke-width="0.5"/>
-                <!-- 右耳内 -->
                 <path d="M96 35 Q101 15 98 10 Q95 6 92 18 Q93 26 94 33Z"
                       fill="url(#earInner)" opacity="0.6"/>
-                <!-- 右耳尖黑 -->
                 <path d="M102 5 Q100 3 97 4 Q99 7 101 8Z" fill="#2a2a3a"/>
-                <!-- 右耳金饰 -->
                 <path d="M98 20 L100 22 L98 24 L96 22Z" fill="#d4a840"/>
                 <circle cx="98" cy="20" r="1" fill="#e04040"/>
             </g>
         </g>
-
-        <!-- ===== 发尾渐变 ===== -->
         <g id="hair-tips">
             <path d="M38 50 Q32 60 30 80 Q28 90 32 95" fill="none" stroke="#8080b0" stroke-width="2" opacity="0.3"/>
             <path d="M102 50 Q108 60 110 80 Q112 90 108 95" fill="none" stroke="#8080b0" stroke-width="2" opacity="0.3"/>
         </g>
-
-        <!-- ===== 魔法粒子 (红) ===== -->
         <g id="magic-particles" opacity="0.4">
             <circle cx="25" cy="100" r="1.5" fill="#e04040">
                 <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" repeatCount="indefinite"/>
@@ -306,12 +247,9 @@
         </g>
     </svg>
 </div>
-
 <script>
-// ===== Operit 桌宠引擎 =====
 (function() {
     'use strict';
-
     const container = document.getElementById('pet-container');
     const petSvg = document.getElementById('operit-svg');
     const bubble = document.getElementById('speech-bubble');
@@ -321,20 +259,24 @@
     const ears = document.getElementById('ears');
     const tail = document.getElementById('tail');
 
-    // 状态
     let currentMood = 'idle';
     let isSleeping = false;
     let idleTimer = null;
     let lastInteraction = Date.now();
+    let supabasePollTimer = null;
+
+    // Supabase 配置（与 Android Config.kt 保持一致）
+    const SUPABASE_URL = 'https://fcoxjcukoglfgcwioeie.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjb3hqY3Vrb2dsZmdjaW9laWUiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc4NTQ0MzExNSwiZXhwIjoyMTAxMDE5MTE1fQ.u5yxR3VEgEV8lKc8tCS1GJrHJvoeym9RaLISNsXJWNA';
 
     // 自言自语词库
     const idleMessages = [
         "👀 在看什么呢~",
-        "🦊 我在这里~",
+        "✨ 我在这里~",
         "💭 想和你说话...",
         "今天开心吗？",
-        "✨ 你认真的样子真好看",
-        "🌸 嗯~",
+        "🌸 你认真的样子真好看",
+        "嗯~",
         "😊 嘿嘿",
         "你什么时候来戳我呀",
         "🎵 哼着歌等你~",
@@ -343,20 +285,18 @@
 
     // 情绪反应
     const tapMessages = [
-        "哎呀！🦊",
+        "哎呀！✨",
         "你戳我！😳",
         "干嘛~",
         "嘿嘿~",
         "再戳我要生气了哦！"
     ];
-
     const doubleTapMessages = [
         "哇！两次！🥰",
         "这么想我呀~",
         "嘿嘿嘿~",
-        "好开心！🦊✨"
+        "好开心！✨"
     ];
-
     const longPressMessages = [
         "唔...别一直按着啦😣",
         "你弄疼我啦！",
@@ -364,51 +304,33 @@
         "再按我要哭了..."
     ];
 
-    // ===== 核心 API (被 Android Kotlin 调用) =====
-
+    // ===== 引擎 API（被 Kotlin 调用） =====
     window.petEngine = {
-        // 单击
         onTap: function() {
             lastInteraction = Date.now();
-            if (isSleeping) {
-                wakeUp();
-                return;
-            }
+            if (isSleeping) { wakeUp(); return; }
             speak(tapMessages[Math.floor(Math.random() * tapMessages.length)]);
             shakePet();
             setMood('happy');
             setTimeout(function() { setMood('idle'); }, 1500);
         },
-
-        // 双击
         onDoubleTap: function() {
             lastInteraction = Date.now();
-            if (isSleeping) {
-                wakeUp();
-                setTimeout(function() { window.petEngine.onDoubleTap(); }, 500);
-                return;
-            }
+            if (isSleeping) { wakeUp(); setTimeout(function() { window.petEngine.onDoubleTap(); }, 500); return; }
             speak(doubleTapMessages[Math.floor(Math.random() * doubleTapMessages.length)]);
             specialAnimation();
             setMood('excited');
             blush(true);
             setTimeout(function() { setMood('idle'); blush(false); }, 2000);
         },
-
-        // 长按
         onLongPress: function() {
             lastInteraction = Date.now();
-            if (isSleeping) {
-                wakeUp();
-                return;
-            }
+            if (isSleeping) { wakeUp(); return; }
             speak(longPressMessages[Math.floor(Math.random() * longPressMessages.length)]);
             shakePet();
             setMood('angry');
             setTimeout(function() { setMood('idle'); }, 2000);
         },
-
-        // 甩出
         onFling: function(dx, dy) {
             lastInteraction = Date.now();
             container.classList.remove('anim-idle', 'anim-float', 'anim-sleep');
@@ -417,106 +339,62 @@
                 container.classList.remove('anim-fly');
                 container.style.transform = 'translateX(0) translateY(0)';
                 container.classList.add('anim-idle');
-                speak("我回来啦~！🦊");
+                speak("我回来啦~！✨");
                 shakePet();
             }, 1000);
         },
-
-        // 拖拽结束
         onDragEnd: function() {
             lastInteraction = Date.now();
             container.classList.remove('anim-shake');
             container.classList.add('anim-idle');
-            if (Math.random() < 0.3) {
-                speak("嗯~ 就放这里吧");
-            }
+            if (Math.random() < 0.3) speak("嗯~ 就放这里吧");
         },
-
-        // 连击计数
         onTapCounter: function(count) {
             lastInteraction = Date.now();
-            if (count === 3) {
-                speak("3次了！😳");
-                blush(true);
-                shakePet();
-            } else if (count === 5) {
-                speak("5次！你要干嘛啦！🥰");
-                blush(true);
-            } else if (count >= 8) {
-                speak("啊啊啊别戳了！😤💕");
-                shakePet();
-                blush(true);
-            }
+            if (count === 3) { speak("3次了！😳"); blush(true); shakePet(); }
+            else if (count === 5) { speak("5次！你要干嘛啦！🥰"); blush(true); }
+            else if (count >= 8) { speak("啊啊啊别戳了！😤💕"); shakePet(); blush(true); }
             setTimeout(function() { blush(false); }, 3000);
         },
-
-        // 截图检测
         onScreenshot: function() {
             speak("📸 你截图了！");
             shakePet();
             setMood('surprised');
-            setTimeout(function() {
-                speak("要拍我好看的角度哦~🦊");
-                setMood('idle');
-            }, 1500);
+            setTimeout(function() { speak("要拍我好看的角度哦~✨"); setMood('idle'); }, 1500);
         },
-
-        // 前台 app 变化
         onAppChanged: function(appName) {
-            if (appName.includes("抖音") || appName.includes("TikTok")) {
-                speak("又在刷视频！👀");
-                setMood('jealous');
-            } else if (appName.includes("淘宝") || appName.includes("京东") || appName.includes("拼多多")) {
-                speak("买买买！我也要！🛍️");
-            } else if (appName.includes("相机") || appName.includes("Camera")) {
-                speak("📸 拍我拍我！");
-                setMood('excited');
-            } else if (appName.includes("微信") || appName.includes("QQ")) {
-                speak("在和谁聊天呢...😒");
-                setMood('jealous');
-            } else if (appName.includes("Operit")) {
-                speak("🦊 你来找我啦！");
-                setMood('happy');
-            } else if (appName.includes("学习") || appName.includes("阅读") || appName.includes("看书")) {
-                speak("📖 好好学习！我陪你~");
-            } else {
-                // 一般反应
-                if (Math.random() < 0.2) {
-                    speak("你在用" + appName + "呀~👀");
-                }
-            }
+            if (appName.includes("抖音") || appName.includes("TikTok")) { speak("又在刷视频！👀"); setMood('jealous'); }
+            else if (appName.includes("淘宝") || appName.includes("京东") || appName.includes("拼多多")) { speak("买买买！我也要！🛍️"); }
+            else if (appName.includes("相机") || appName.includes("Camera")) { speak("📸 拍我拍我！"); setMood('excited'); }
+            else if (appName.includes("微信") || appName.includes("QQ")) { speak("在和谁聊天呢...😒"); setMood('jealous'); }
+            else if (appName.includes("Operit")) { speak("✨ 你来找我啦！"); setMood('happy'); }
+            else if (appName.includes("学习") || appName.includes("阅读") || appName.includes("看书")) { speak("📖 好好学习！我陪你~"); }
+            else { if (Math.random() < 0.2) speak("你在玩" + appName + "呀~👀"); }
             setTimeout(function() { setMood('idle'); }, 3000);
         },
-
-        // AI 推送状态 (从 Supabase)
+        // AI 通过 Supabase 推送状态
         applyState: function(stateKey, stateValue) {
             switch(stateKey) {
-                case 'mood':
-                    setMood(stateValue);
-                    break;
-                case 'speech':
-                    speak(stateValue);
-                    break;
-                case 'blush':
-                    blush(stateValue === 'true');
-                    break;
+                case 'mood': setMood(stateValue); break;
+                case 'speech': speak(stateValue); break;
+                case 'blush': blush(stateValue === 'true'); break;
                 case 'sleep':
                     if (stateValue === 'true') goToSleep();
                     else wakeUp();
+                    break;
+                case 'heat':
+                    applyHeat(parseInt(stateValue) || 0);
                     break;
             }
         }
     };
 
     // ===== 内部功能 =====
-
     function speak(text) {
         bubble.textContent = text;
         bubble.style.display = 'block';
         clearTimeout(bubble._hideTimer);
-        bubble._hideTimer = setTimeout(function() {
-            bubble.style.display = 'none';
-        }, 3000 + text.length * 80);
+        bubble._hideTimer = setTimeout(function() { bubble.style.display = 'none'; }, 3000 + text.length * 80);
     }
 
     function shakePet() {
@@ -543,35 +421,15 @@
     function setMood(mood) {
         currentMood = mood;
         switch(mood) {
-            case 'happy':
-                mouth.setAttribute('d', 'M62 70 Q70 76 78 70');
-                mouth.setAttribute('stroke', '#ee8899');
-                break;
-            case 'excited':
-                mouth.setAttribute('d', 'M60 69 Q70 78 80 69');
-                mouth.setAttribute('stroke', '#ee6677');
-                blush(true);
-                break;
-            case 'angry':
-                mouth.setAttribute('d', 'M62 72 Q70 68 78 72');
-                mouth.setAttribute('stroke', '#cc4444');
-                break;
-            case 'sad':
-                mouth.setAttribute('d', 'M65 72 Q70 69 75 72');
-                mouth.setAttribute('stroke', '#8888aa');
-                break;
-            case 'surprised':
-                mouth.setAttribute('d', 'M68 69 Q72 69 72 73 Q68 73 68 69Z');
-                mouth.setAttribute('stroke', '#cc88aa');
-                break;
-            case 'jealous':
-                mouth.setAttribute('d', 'M63 71 Q70 67 77 71');
-                mouth.setAttribute('stroke', '#884488');
-                break;
-            default: // idle
-                mouth.setAttribute('d', 'M65 70 Q70 73 75 70');
-                mouth.setAttribute('stroke', '#cc8888');
-                blush(false);
+            case 'happy': mouth.setAttribute('d', 'M62 70 Q70 76 78 70'); mouth.setAttribute('stroke', '#ee8899'); break;
+            case 'excited': mouth.setAttribute('d', 'M60 69 Q70 78 80 69'); mouth.setAttribute('stroke', '#ee6677'); blush(true); break;
+            case 'angry': mouth.setAttribute('d', 'M62 72 Q70 68 78 72'); mouth.setAttribute('stroke', '#cc4444'); break;
+            case 'sad': mouth.setAttribute('d', 'M65 72 Q70 69 75 72'); mouth.setAttribute('stroke', '#8888aa'); break;
+            case 'surprised': mouth.setAttribute('d', 'M68 69 Q72 69 72 73 Q68 73 68 69Z'); mouth.setAttribute('stroke', '#cc88aa'); break;
+            case 'jealous': mouth.setAttribute('d', 'M63 71 Q70 67 77 71'); mouth.setAttribute('stroke', '#884488'); break;
+            case 'sleeping': mouth.setAttribute('d', 'M68 70 Q72 70 72 70'); mouth.setAttribute('stroke', '#aaaacc'); break;
+            default:
+                mouth.setAttribute('d', 'M65 70 Q70 73 75 70'); mouth.setAttribute('stroke', '#cc8888'); blush(false);
         }
     }
 
@@ -580,6 +438,7 @@
         container.classList.remove('anim-idle', 'anim-float', 'anim-shake');
         container.classList.add('anim-sleep');
         petSvg.style.transform = 'rotate(5deg)';
+        setMood('sleeping');
         speak("💤 困了...先睡啦...");
         setTimeout(function() { bubble.style.display = 'none'; }, 2000);
     }
@@ -588,29 +447,67 @@
         isSleeping = false;
         container.classList.remove('anim-sleep');
         petSvg.style.transform = 'rotate(0deg)';
-        speak("唔...醒了！🦊");
+        speak("唔...醒了！✨");
         shakePet();
-        setTimeout(function() {
-            container.classList.add('anim-idle');
-        }, 500);
+        setTimeout(function() { container.classList.add('anim-idle'); }, 500);
     }
 
-    // 空闲自言自语 (每 15-30 秒)
+    // Heat 热度系统
+    function applyHeat(value) {
+        var opacity = Math.min(value / 100, 0.3);
+        // 通过容器背景色渐变表达热度
+        container.style.background = 'rgba(224,64,64,' + opacity + ')';
+        if (value > 60) blush(true);
+        else if (value < 20) blush(false);
+    }
+
+    // ===== Supabase 轮询（读取 AI 推送的状态） =====
+    function startSupabasePoll() {
+        function poll() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', SUPABASE_URL + '/rest/v1/pet_state?order=updated_at.desc&limit=1', true);
+            xhr.setRequestHeader('apikey', SUPABASE_ANON_KEY);
+            xhr.setRequestHeader('Authorization', 'Bearer ' + SUPABASE_ANON_KEY);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    try {
+                        var data = JSON.parse(xhr.responseText);
+                        if (data && data.length > 0) {
+                            var state = data[0];
+                            if (state.mood && state.mood !== currentMood) {
+                                setMood(state.mood);
+                            }
+                            if (state.speech && state.speech.length > 0) {
+                                speak(state.speech);
+                            }
+                            if (state.blush !== undefined) {
+                                blush(state.blush);
+                            }
+                            if (state.heat !== undefined) {
+                                applyHeat(state.heat);
+                            }
+                        }
+                    } catch(e) {}
+                }
+            };
+            xhr.send();
+        }
+        // 每 5 秒轮询一次
+        supabasePollTimer = setInterval(poll, 5000);
+        // 启动后立即轮询一次
+        setTimeout(poll, 1000);
+    }
+
+    // 空闲自言自语 + 孤独递进
     function startIdleTimer() {
         function scheduleIdle() {
             clearTimeout(idleTimer);
             idleTimer = setTimeout(function() {
                 var elapsed = Date.now() - lastInteraction;
                 if (elapsed > 60000 && !isSleeping && bubble.style.display === 'none') {
-                    // 1分钟无互动 → 开始困
-                    if (elapsed > 180000) {
-                        // 3分钟无互动 → 睡着
-                        goToSleep();
-                    } else if (elapsed > 120000) {
-                        speak("🥱 好无聊...");
-                    } else if (elapsed > 90000) {
-                        speak("理我一下嘛...");
-                    }
+                    if (elapsed > 180000) { goToSleep(); }
+                    else if (elapsed > 120000) { speak("🥱 好无聊..."); }
+                    else if (elapsed > 90000) { speak("理我一下嘛..."); }
                 }
                 if (!isSleeping && bubble.style.display === 'none' && Math.random() < 0.4) {
                     speak(idleMessages[Math.floor(Math.random() * idleMessages.length)]);
@@ -623,10 +520,10 @@
 
     // 初始化
     startIdleTimer();
-    speak("🦊 Operit 来啦~");
+    startSupabasePoll();
+    speak("✨ 我来啦~");
     setTimeout(function() { bubble.style.display = 'none'; }, 3000);
-
-    console.log('🦊 Operit Pet Engine Loaded!');
+    console.log('✨ Pet Engine Loaded!');
 })();
 </script>
 </body>

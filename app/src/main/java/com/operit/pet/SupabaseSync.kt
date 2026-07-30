@@ -6,20 +6,15 @@ import java.net.URL
 import org.json.JSONObject
 
 /**
- * Supabase 后端同步 — 模块⑥: supabase-sync.md
+ * Supabase 后端同步
  * 连接你的 AI 大脑与 Android 桌宠身体
- *
- * 使用前先在 Operit 环境变量中设置:
- *   SUPABASE_URL = https://xxx.supabase.co
- *   SUPABASE_KEY = your-anon-or-service-key
  */
 object SupabaseConfig {
-    var url: String = ""
-    var key: String = ""
+    var url: String = Config.SUPABASE_URL
+    var key: String = Config.SUPABASE_ANON_KEY
 }
 
 class SupabaseSync {
-
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     /**
@@ -40,13 +35,23 @@ class SupabaseSync {
     fun logAppUsage(packageName: String) {
         val body = JSONObject().apply {
             put("package_name", packageName)
+            put("app_name", packageName)
         }
         postToSupabase("app_usage", body)
     }
 
     /**
-     * 从后端读取 AI 推送的状态
-     * 返回最新一条 pet_state
+     * 上报截图事件
+     */
+    fun logScreenshot(filePath: String = "") {
+        val body = JSONObject().apply {
+            put("file_path", filePath)
+        }
+        postToSupabase("screenshot_log", body)
+    }
+
+    /**
+     * 从后端读取 AI 推送的最新状态
      */
     fun fetchLatestState(): JSONObject? {
         return try {

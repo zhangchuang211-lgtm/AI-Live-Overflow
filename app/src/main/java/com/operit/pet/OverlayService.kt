@@ -14,16 +14,10 @@ import android.webkit.WebSettings
 import kotlin.math.abs
 import kotlin.math.sqrt
 
-/**
- * Operit 悬浮窗核心服务
- * 修复：setLayerType 位置、通知图标兼容、空指针保护
- */
 class OverlayService : Service() {
-
     private var windowManager: WindowManager? = null
     private var overlayView: WebView? = null
     private var params: WindowManager.LayoutParams? = null
-
     private var initialX = 0
     private var initialY = 0
     private var initialTouchX = 0f
@@ -35,15 +29,14 @@ class OverlayService : Service() {
     private var lastTapWindowStart = 0L
     private var notificationHandler: Handler? = null
 
+    // 感知系统
+    private var usageTracker: UsageTracker? = null
+    private var screenshotObserver: ScreenshotObserver? = null
+    private var supabaseSync: SupabaseSync? = null
+
     companion object {
         private const val CHANNEL_ID = "operit_pet_channel"
         private const val NOTIFICATION_ID = 1001
-        private const val PET_SIZE_DP = 180
-        private const val PET_HEIGHT_DP = 240
-        private const val DOUBLE_TAP_TIMEOUT = 300L
-        private const val LONG_PRESS_TIMEOUT = 600L
-        private const val MOVE_THRESHOLD = 10
-        private const val WHISPER_INTERVAL = 3600_000L
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -51,12 +44,17 @@ class OverlayService : Service() {
     override fun onCreate() {
         super.onCreate()
         try {
-            createNotificationChannel()
-            val notification = buildNotification("🦊 Operit 来啦~")
-            startForeground(NOTIFICATION_ID, notification)
+            // 初始化 Supabase
+            SupabaseConfig.url = Config.SUPABASE_URL
+            SupabaseConfig.key = Config.SUPABASE_ANON_KEY
+            supabaseSync = SupabaseSync()
 
+            createNotificationChannel()
+            val notification = buildNotification("✨ 我来啦~")
+            startForeground(NOTIFICATION_ID, notification)
             setupOverlay()
             startWhisperRotation()
+            startPerceptionSystems()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -65,10 +63,9 @@ class OverlayService : Service() {
     private fun setupOverlay() {
         try {
             windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-
             params = WindowManager.LayoutParams(
-                dpToPx(PET_SIZE_DP),
-                dpToPx(PET_HEIGHT_DP),
+                dpToPx(Config.PET_WIDTH),
+                dpToPx(Config.PET_HEIGHT),
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                         WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
@@ -81,7 +78,6 @@ class OverlayService : Service() {
 
             overlayView = WebView(this).apply {
                 setBackgroundColor(0x00000000)
-                // ✅ 正确位置：setLayerType 是 View 的方法，在 WebView 自身上调用
                 setLayerType(View.LAYER_TYPE_HARDWARE, null)
                 settings.apply {
                     javaScriptEnabled = true
@@ -116,7 +112,7 @@ class OverlayService : Service() {
                     MotionEvent.ACTION_MOVE -> {
                         val dx = (event.rawX - initialTouchX).toInt()
                         val dy = (event.rawY - initialTouchY).toInt()
-                        if (abs(dx) > MOVE_THRESHOLD || abs(dy) > MOVE_THRESHOLD) {
+                        if (abs(dx) > Config.MOVE_THRESHOLD || abs(dy) > Config.MOVE_THRESHOLD) {
                             hasMoved = true
                             params?.x = initialX + dx
                             params?.y = initialY + dy
@@ -128,19 +124,42 @@ class OverlayService : Service() {
                         val elapsed = System.currentTimeMillis() - touchStartTime
                         if (!hasMoved) {
                             when {
-                                elapsed > LONG_PRESS_TIMEOUT -> onLongPress()
-                                System.currentTimeMillis() - lastTapTime < DOUBLE_TAP_TIMEOUT -> onDoubleTap()
+                                elapsed > Config.LONG_PRESS_TIMEOUT -> {
+                                    onLongPress()
+                                    supabaseSync?.logGesture("longpress")
+                                }
+                                System.currentTimeMillis() - lastTapTime < Config.DOUBLE_TAP_TIMEOUT -> {
+                                    onDoubleTap()
+                                    supabaseSync?.logGesture("doubletap")
+                                }
                                 else -> {
                                     lastTapTime = System.currentTimeMillis()
+                                    // 连击计数
+                                    val now = System.currentTimeMillis()
+                                    if (now - lastTapWindowStart > 2000) {
+                                        tapCount = 1
+                                        lastTapWindowStart = now
+                                    } else {
+                                        tapCount++
+                                    }
                                     onTap()
+                                    supabaseSync?.logGesture("tap")
+                                    if (tapCount >= 3) {
+                                        onTapCounter(tapCount)
+                                    }
                                 }
                             }
                         } else {
                             val dx = (event.rawX - initialTouchX).toInt()
                             val dy = (event.rawY - initialTouchY).toInt()
                             val velocity = sqrt((dx * dx + dy * dy).toDouble())
-                            if (velocity > 200 && elapsed < 400) onFling(dx, dy)
-                            else onDragEnd()
+                            if (velocity > 200 && elapsed < 400) {
+                                onFling(dx, dy)
+                                supabaseSync?.logGesture("fling", dx, dy)
+                            } else {
+                                onDragEnd()
+                                supabaseSync?.logGesture("drag")
+                            }
                         }
                         true
                     }
@@ -182,8 +201,32 @@ class OverlayService : Service() {
         )
     }
 
-    // ========== 通知 ==========
+    private fun onTapCounter(count: Int) {
+        overlayView?.evaluateJavascript(
+            "window.petEngine && window.petEngine.onTapCounter($count)", null
+        )
+    }
 
+    // ===== 感知系统 =====
+    private fun startPerceptionSystems() {
+        // 前台 App 检测
+        usageTracker = UsageTracker(this).apply {
+            onAppChanged = { packageName ->
+                overlayView?.evaluateJavascript(
+                    "window.petEngine && window.petEngine.onAppChanged('$packageName')", null
+                )
+                supabaseSync?.logAppUsage(packageName)
+            }
+            start()
+        }
+
+        // 截图检测
+        screenshotObserver = ScreenshotObserver(overlayView).apply {
+            start()
+        }
+    }
+
+    // ===== 通知 =====
     private fun startWhisperRotation() {
         try {
             notificationHandler = Handler(Looper.getMainLooper())
@@ -191,10 +234,10 @@ class OverlayService : Service() {
                 override fun run() {
                     try {
                         updateWhisper()
-                        notificationHandler?.postDelayed(this, WHISPER_INTERVAL)
+                        notificationHandler?.postDelayed(this, Config.WHISPER_INTERVAL)
                     } catch (e: Exception) {}
                 }
-            }, WHISPER_INTERVAL)
+            }, Config.WHISPER_INTERVAL)
         } catch (e: Exception) {}
     }
 
@@ -209,16 +252,14 @@ class OverlayService : Service() {
             hour in 0..5 -> "🌙 这么晚了还不睡..."
             hour in 6..8 -> "☀️ 早上好呀！"
             hour in 12..13 -> "🍚 记得吃饭！"
-            else -> "🦊 我在呢~"
+            else -> "✨ 我在呢~"
         }
     }
 
     private fun buildNotification(text: String): Notification {
-        // 使用原生 API，避免 NotificationCompat 兼容问题
         val channelId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) CHANNEL_ID else ""
-        // 用 android.R.drawable.ic_dialog_info 替代 ic_menu_compass（更安全）
         return Notification.Builder(this)
-            .setContentTitle("🦊 Operit")
+            .setContentTitle("✨ 小狐狸")
             .setContentText(text)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setOngoing(true)
@@ -235,7 +276,7 @@ class OverlayService : Service() {
             try {
                 val channel = NotificationChannel(
                     CHANNEL_ID,
-                    "Operit 桌宠",
+                    "小狐狸桌宠",
                     NotificationManager.IMPORTANCE_LOW
                 ).apply { setShowBadge(false) }
                 getSystemService(NotificationManager::class.java)
@@ -256,6 +297,9 @@ class OverlayService : Service() {
             }
         } catch (e: Exception) {}
         overlayView = null
+        usageTracker?.stop()
+        screenshotObserver?.stop()
+        supabaseSync?.destroy()
         notificationHandler?.removeCallbacksAndMessages(null)
         try { stopForeground(STOP_FOREGROUND_REMOVE) } catch (e: Exception) {}
         super.onDestroy()
