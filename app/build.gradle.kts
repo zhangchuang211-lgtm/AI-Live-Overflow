@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.operit.pet"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.operit.pet"
         minSdk = 26  // Android 8.0
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0.0"
 
@@ -19,9 +19,20 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            // 复用 Android SDK 自带的 debug keystore
+            storeFile = file(System.getenv("ANDROID_HOME") + "/.android/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
