@@ -55,50 +55,11 @@
             from { opacity: 0; transform: translateX(-50%) translateY(10px) scale(0.8); }
             to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
         }
-        #mood-indicator {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: none;
-        }
-        @keyframes idleFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-        @keyframes earWiggle {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-5deg); }
-            75% { transform: rotate(5deg); }
-        }
-        @keyframes tailSway {
-            0%, 100% { transform: rotate(-10deg); }
-            50% { transform: rotate(10deg); }
-        }
-        @keyframes blink {
-            0%, 90%, 100% { transform: scaleY(1); }
-            95% { transform: scaleY(0.1); }
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-5px) rotate(-2deg); }
-            75% { transform: translateY(2px) rotate(2deg); }
-        }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
-            20%, 40%, 60%, 80% { transform: translateX(3px); }
-        }
-        @keyframes sleep {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(2px) rotate(2deg); }
-        }
-        @keyframes flyAway {
-            0% { transform: translateX(0) translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateX(300px) translateY(-100px) rotate(45deg); opacity: 0; }
-        }
+        @keyframes idleFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+        @keyframes float { 0%,100% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-5px) rotate(-2deg); } 75% { transform: translateY(2px) rotate(2deg); } }
+        @keyframes shake { 0%,100% { transform: translateX(0); } 10%,30%,50%,70%,90% { transform: translateX(-3px); } 20%,40%,60%,80% { transform: translateX(3px); } }
+        @keyframes sleep { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(2px) rotate(2deg); } }
+        @keyframes flyAway { 0% { transform: translateX(0) translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateX(300px) translateY(-100px) rotate(45deg); opacity: 0; } }
         .anim-idle { animation: idleFloat 3s ease-in-out infinite; }
         .anim-float { animation: float 4s ease-in-out infinite; }
         .anim-shake { animation: shake 0.5s ease; }
@@ -132,17 +93,12 @@
                 <stop offset="100%" stop-color="#b02020"/>
             </linearGradient>
         </defs>
-        <!-- 尾巴 -->
-        <g id="tail" class="tail-sway">
-            <path d="M70 155 Q90 165 100 175 Q95 180 85 175 Q75 170 70 155Z"
-                  fill="url(#earOuter)" stroke="#c0c0d8" stroke-width="0.5"/>
-            <path d="M70 155 Q85 162 92 170 Q88 174 80 170 Q74 166 70 155Z"
-                  fill="url(#earInner)" opacity="0.6"/>
+        <g id="tail">
+            <path d="M70 155 Q90 165 100 175 Q95 180 85 175 Q75 170 70 155Z" fill="url(#earOuter)" stroke="#c0c0d8" stroke-width="0.5"/>
+            <path d="M70 155 Q85 162 92 170 Q88 174 80 170 Q74 166 70 155Z" fill="url(#earInner)" opacity="0.6"/>
         </g>
-        <!-- 身体 -->
         <g id="body">
-            <path d="M45 95 Q50 90 70 88 Q90 90 95 95 L100 145 Q80 150 60 145 L45 95Z"
-                  fill="url(#outfitGrad)" stroke="#333" stroke-width="0.5"/>
+            <path d="M45 95 Q50 90 70 88 Q90 90 95 95 L100 145 Q80 150 60 145 L45 95Z" fill="url(#outfitGrad)" stroke="#333" stroke-width="0.5"/>
             <path d="M45 95 Q40 92 42 100 Q48 98 45 95Z" fill="url(#redAccent)"/>
             <path d="M95 95 Q100 92 98 100 Q92 98 95 95Z" fill="url(#redAccent)"/>
             <circle cx="70" cy="110" r="5" fill="#d4a840" stroke="#b89030" stroke-width="0.5"/>
@@ -151,7 +107,6 @@
             <path d="M65 125 Q60 135 55 140" fill="none" stroke="url(#redAccent)" stroke-width="2"/>
             <path d="M75 125 Q80 135 85 140" fill="none" stroke="url(#redAccent)" stroke-width="2"/>
         </g>
-        <!-- 手臂 -->
         <g id="arms">
             <path d="M50 100 Q35 115 30 130" fill="none" stroke="#f0e8e0" stroke-width="4" stroke-linecap="round"/>
             <path d="M90 100 Q105 115 110 130" fill="none" stroke="#f0e8e0" stroke-width="4" stroke-linecap="round"/>
@@ -160,7 +115,6 @@
             <circle cx="110" cy="130" r="3" fill="#f0e8e0"/>
             <path d="M108 128 L110 126 L112 128 L110 132Z" fill="#e04040" opacity="0.6"/>
         </g>
-        <!-- 头部 -->
         <g id="head">
             <ellipse cx="70" cy="60" rx="32" ry="36" fill="#f5eee6"/>
             <ellipse cx="52" cy="68" rx="7" ry="4" fill="#ffb0b0" opacity="0" id="blush-left"/>
@@ -168,7 +122,6 @@
             <path d="M65 45 L70 42 L75 45 L70 48Z" fill="#e04040" opacity="0.4"/>
             <text x="55" y="44" font-size="6" fill="#e04040" opacity="0.3">◈</text>
             <text x="80" y="44" font-size="6" fill="#e04040" opacity="0.3">◈</text>
-            <!-- 眼睛 -->
             <g id="eyes">
                 <ellipse cx="55" cy="60" rx="8" ry="7" fill="white"/>
                 <ellipse cx="55" cy="60" rx="6" ry="5.5" fill="#c89420"/>
@@ -183,23 +136,13 @@
                 <path d="M47 55 Q48 52 52 53" fill="none" stroke="#1a1a2e" stroke-width="1.5" stroke-linecap="round"/>
                 <path d="M93 55 Q92 52 88 53" fill="none" stroke="#1a1a2e" stroke-width="1.5" stroke-linecap="round"/>
             </g>
-            <!-- 嘴巴 -->
             <path d="M65 70 Q70 73 75 70" fill="none" stroke="#cc8888" stroke-width="1.5" stroke-linecap="round" id="mouth"/>
-            <path d="M62 69 Q65 72 65 70" fill="none" stroke="#cc8888" stroke-width="1"/>
-            <path d="M78 69 Q75 72 75 70" fill="none" stroke="#cc8888" stroke-width="1"/>
-            <!-- 头发 -->
             <g id="hair">
-                <path d="M38 50 Q35 35 45 25 Q55 18 70 15 Q85 18 95 25 Q105 35 102 50
-                         Q100 40 95 35 Q85 28 70 26 Q55 28 45 35 Q40 40 38 50Z"
-                      fill="url(#hairGrad)"/>
-                <path d="M40 45 Q45 35 55 30 Q65 27 70 28 Q65 32 60 38 Q55 44 52 48 Z"
-                      fill="url(#hairGrad)" opacity="0.9"/>
-                <path d="M75 28 Q80 30 85 35 Q92 42 100 45 Q95 38 88 32 Q80 28 75 28Z"
-                      fill="url(#hairGrad)" opacity="0.9"/>
-                <path d="M38 50 Q32 60 30 80 Q28 90 32 95 Q35 85 36 70 Q38 60 38 50Z"
-                      fill="url(#hairGrad)"/>
-                <path d="M102 50 Q108 60 110 80 Q112 90 108 95 Q105 85 104 70 Q102 60 102 50Z"
-                      fill="url(#hairGrad)"/>
+                <path d="M38 50 Q35 35 45 25 Q55 18 70 15 Q85 18 95 25 Q105 35 102 50 Q100 40 95 35 Q85 28 70 26 Q55 28 45 35 Q40 40 38 50Z" fill="url(#hairGrad)"/>
+                <path d="M40 45 Q45 35 55 30 Q65 27 70 28 Q65 32 60 38 Q55 44 52 48 Z" fill="url(#hairGrad)" opacity="0.9"/>
+                <path d="M75 28 Q80 30 85 35 Q92 42 100 45 Q95 38 88 32 Q80 28 75 28Z" fill="url(#hairGrad)" opacity="0.9"/>
+                <path d="M38 50 Q32 60 30 80 Q28 90 32 95 Q35 85 36 70 Q38 60 38 50Z" fill="url(#hairGrad)"/>
+                <path d="M102 50 Q108 60 110 80 Q112 90 108 95 Q105 85 104 70 Q102 60 102 50Z" fill="url(#hairGrad)"/>
                 <circle cx="70" cy="22" r="8" fill="url(#hairGrad)" stroke="#b0b0c8" stroke-width="0.5"/>
                 <line x1="65" y1="18" x2="75" y2="26" stroke="#d4a840" stroke-width="1.5"/>
                 <circle cx="75" cy="26" r="2" fill="#e04040"/>
@@ -207,29 +150,20 @@
                 <circle cx="62" cy="24" r="1.5" fill="#e04040"/>
                 <circle cx="78" cy="24" r="1.5" fill="#e04040"/>
             </g>
-            <!-- 狐狸耳朵 -->
             <g id="ears">
-                <path d="M43 38 Q35 10 38 5 Q42 0 50 15 Q48 25 46 35Z"
-                      fill="url(#earOuter)" stroke="#c0c0d8" stroke-width="0.5"/>
-                <path d="M44 35 Q39 15 42 10 Q45 6 48 18 Q47 26 46 33Z"
-                      fill="url(#earInner)" opacity="0.6"/>
+                <path d="M43 38 Q35 10 38 5 Q42 0 50 15 Q48 25 46 35Z" fill="url(#earOuter)" stroke="#c0c0d8" stroke-width="0.5"/>
+                <path d="M44 35 Q39 15 42 10 Q45 6 48 18 Q47 26 46 33Z" fill="url(#earInner)" opacity="0.6"/>
                 <path d="M38 5 Q40 3 43 4 Q41 7 39 8Z" fill="#2a2a3a"/>
                 <path d="M42 20 L44 22 L42 24 L40 22Z" fill="#d4a840"/>
                 <circle cx="42" cy="20" r="1" fill="#e04040"/>
-                <path d="M97 38 Q105 10 102 5 Q98 0 90 15 Q92 25 94 35Z"
-                      fill="url(#earOuter)" stroke="#c0c0d8" stroke-width="0.5"/>
-                <path d="M96 35 Q101 15 98 10 Q95 6 92 18 Q93 26 94 33Z"
-                      fill="url(#earInner)" opacity="0.6"/>
+                <path d="M97 38 Q105 10 102 5 Q98 0 90 15 Q92 25 94 35Z" fill="url(#earOuter)" stroke="#c0c0d8" stroke-width="0.5"/>
+                <path d="M96 35 Q101 15 98 10 Q95 6 92 18 Q93 26 94 33Z" fill="url(#earInner)" opacity="0.6"/>
                 <path d="M102 5 Q100 3 97 4 Q99 7 101 8Z" fill="#2a2a3a"/>
                 <path d="M98 20 L100 22 L98 24 L96 22Z" fill="#d4a840"/>
                 <circle cx="98" cy="20" r="1" fill="#e04040"/>
             </g>
         </g>
-        <g id="hair-tips">
-            <path d="M38 50 Q32 60 30 80 Q28 90 32 95" fill="none" stroke="#8080b0" stroke-width="2" opacity="0.3"/>
-            <path d="M102 50 Q108 60 110 80 Q112 90 108 95" fill="none" stroke="#8080b0" stroke-width="2" opacity="0.3"/>
-        </g>
-        <g id="magic-particles" opacity="0.4">
+        <g opacity="0.4">
             <circle cx="25" cy="100" r="1.5" fill="#e04040">
                 <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" repeatCount="indefinite"/>
                 <animate attributeName="cy" values="100;95;100" dur="3s" repeatCount="indefinite"/>
@@ -256,8 +190,6 @@
     const blushLeft = document.getElementById('blush-left');
     const blushRight = document.getElementById('blush-right');
     const mouth = document.getElementById('mouth');
-    const ears = document.getElementById('ears');
-    const tail = document.getElementById('tail');
 
     let currentMood = 'idle';
     let isSleeping = false;
@@ -265,46 +197,20 @@
     let lastInteraction = Date.now();
     let supabasePollTimer = null;
 
-    // Supabase 配置（与 Android Config.kt 保持一致）
-    const SUPABASE_URL = 'https://fcoxjcukoglfgcwioeie.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjb3hqY3Vrb2dsZmdjaW9laWUiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc4NTQ0MzExNSwiZXhwIjoyMTAxMDE5MTE1fQ.u5yxR3VEgEV8lKc8tCS1GJrHJvoeym9RaLISNsXJWNA';
+    // Supabase 配置 — 新项目
+    const SUPABASE_URL = 'https://ekfxdoewooienrcpngtr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrZnhkb2V3b29laW5yY3BuZ3RrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0NTkxNTcsImV4cCI6MjEwMTAzNTE1N30.S4EoKEnMDVIf6EwEUXKwGVln6jwxd35j7_JUksYA3uE';
 
     // 自言自语词库
     const idleMessages = [
-        "👀 在看什么呢~",
-        "✨ 我在这里~",
-        "💭 想和你说话...",
-        "今天开心吗？",
-        "🌸 你认真的样子真好看",
-        "嗯~",
-        "😊 嘿嘿",
-        "你什么时候来戳我呀",
-        "🎵 哼着歌等你~",
-        "🥺 别不理我嘛"
+        "👀 在看什么呢~", "✨ 我在这里~", "💭 想和你说话...",
+        "今天开心吗？", "🌸 你认真的样子真好看", "嗯~",
+        "😊 嘿嘿", "你什么时候来戳我呀", "🎵 哼着歌等你~", "🥺 别不理我嘛"
     ];
+    const tapMessages = ["哎呀！✨", "你戳我！😳", "干嘛~", "嘿嘿~", "再戳我要生气了哦！"];
+    const doubleTapMessages = ["哇！两次！🥰", "这么想我呀~", "嘿嘿嘿~", "好开心！✨"];
+    const longPressMessages = ["唔...别一直按着啦😣", "你弄疼我啦！", "快松手！😤", "再按我要哭了..."];
 
-    // 情绪反应
-    const tapMessages = [
-        "哎呀！✨",
-        "你戳我！😳",
-        "干嘛~",
-        "嘿嘿~",
-        "再戳我要生气了哦！"
-    ];
-    const doubleTapMessages = [
-        "哇！两次！🥰",
-        "这么想我呀~",
-        "嘿嘿嘿~",
-        "好开心！✨"
-    ];
-    const longPressMessages = [
-        "唔...别一直按着啦😣",
-        "你弄疼我啦！",
-        "快松手！😤",
-        "再按我要哭了..."
-    ];
-
-    // ===== 引擎 API（被 Kotlin 调用） =====
     window.petEngine = {
         onTap: function() {
             lastInteraction = Date.now();
@@ -372,7 +278,6 @@
             else { if (Math.random() < 0.2) speak("你在玩" + appName + "呀~👀"); }
             setTimeout(function() { setMood('idle'); }, 3000);
         },
-        // AI 通过 Supabase 推送状态
         applyState: function(stateKey, stateValue) {
             switch(stateKey) {
                 case 'mood': setMood(stateValue); break;
@@ -382,15 +287,13 @@
                     if (stateValue === 'true') goToSleep();
                     else wakeUp();
                     break;
-                case 'heat':
-                    applyHeat(parseInt(stateValue) || 0);
-                    break;
+                case 'heat': applyHeat(parseInt(stateValue) || 0); break;
             }
         }
     };
 
-    // ===== 内部功能 =====
     function speak(text) {
+        if (!text) return;
         bubble.textContent = text;
         bubble.style.display = 'block';
         clearTimeout(bubble._hideTimer);
@@ -414,8 +317,9 @@
     }
 
     function blush(show) {
-        blushLeft.setAttribute('opacity', show ? '0.5' : '0');
-        blushRight.setAttribute('opacity', show ? '0.5' : '0');
+        var v = show ? '0.5' : '0';
+        blushLeft.setAttribute('opacity', v);
+        blushRight.setAttribute('opacity', v);
     }
 
     function setMood(mood) {
@@ -428,8 +332,7 @@
             case 'surprised': mouth.setAttribute('d', 'M68 69 Q72 69 72 73 Q68 73 68 69Z'); mouth.setAttribute('stroke', '#cc88aa'); break;
             case 'jealous': mouth.setAttribute('d', 'M63 71 Q70 67 77 71'); mouth.setAttribute('stroke', '#884488'); break;
             case 'sleeping': mouth.setAttribute('d', 'M68 70 Q72 70 72 70'); mouth.setAttribute('stroke', '#aaaacc'); break;
-            default:
-                mouth.setAttribute('d', 'M65 70 Q70 73 75 70'); mouth.setAttribute('stroke', '#cc8888'); blush(false);
+            default: mouth.setAttribute('d', 'M65 70 Q70 73 75 70'); mouth.setAttribute('stroke', '#cc8888'); blush(false);
         }
     }
 
@@ -452,16 +355,14 @@
         setTimeout(function() { container.classList.add('anim-idle'); }, 500);
     }
 
-    // Heat 热度系统
     function applyHeat(value) {
         var opacity = Math.min(value / 100, 0.3);
-        // 通过容器背景色渐变表达热度
         container.style.background = 'rgba(224,64,64,' + opacity + ')';
         if (value > 60) blush(true);
         else if (value < 20) blush(false);
     }
 
-    // ===== Supabase 轮询（读取 AI 推送的状态） =====
+    // Supabase 轮询
     function startSupabasePoll() {
         function poll() {
             var xhr = new XMLHttpRequest();
@@ -474,31 +375,21 @@
                         var data = JSON.parse(xhr.responseText);
                         if (data && data.length > 0) {
                             var state = data[0];
-                            if (state.mood && state.mood !== currentMood) {
-                                setMood(state.mood);
-                            }
-                            if (state.speech && state.speech.length > 0) {
-                                speak(state.speech);
-                            }
-                            if (state.blush !== undefined) {
-                                blush(state.blush);
-                            }
-                            if (state.heat !== undefined) {
-                                applyHeat(state.heat);
-                            }
+                            if (state.mood && state.mood !== currentMood) setMood(state.mood);
+                            if (state.speech && state.speech.length > 0) speak(state.speech);
+                            if (state.blush !== undefined) blush(state.blush);
+                            if (state.heat !== undefined) applyHeat(state.heat);
                         }
                     } catch(e) {}
                 }
             };
             xhr.send();
         }
-        // 每 5 秒轮询一次
         supabasePollTimer = setInterval(poll, 5000);
-        // 启动后立即轮询一次
         setTimeout(poll, 1000);
     }
 
-    // 空闲自言自语 + 孤独递进
+    // 空闲计时器
     function startIdleTimer() {
         function scheduleIdle() {
             clearTimeout(idleTimer);
@@ -518,7 +409,6 @@
         scheduleIdle();
     }
 
-    // 初始化
     startIdleTimer();
     startSupabasePoll();
     speak("✨ 我来啦~");
