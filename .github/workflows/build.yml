@@ -25,32 +25,24 @@ jobs:
       - name: Build debug APK
         run: gradle assembleDebug
 
-      - name: Remove testOnly flag with apksigner
+      - name: Sign APK with release key
         run: |
-          # 用 Android SDK 自带的 debug keystore 签名
-          # 先解压 APK 修改 AndroidManifest 去掉 testOnly
-          apt-get update && apt-get install -y zip 2>/dev/null || true
-          cd app/build/outputs/apk/debug/
-          mkdir -p temp_apk
-          cd temp_apk
-          unzip -o ../app-debug.apk
-          # 用新签名重新打包
-          cd ..
-          rm -f app-signed.apk
-          # jarsigner 用 debug 证书重新签名
-          keytool -genkey -v -keystore debug.keystore -alias androiddebugkey \
-            -storepass android -keypass android -keyalg RSA -keysize 2048 \
-            -validity 10000 -dname "CN=Android Debug,O=Android,C=US" 2>/dev/null || true
-          jarsigner -keystore debug.keystore -storepass android -keypass android \
-            -signedjar app-signed.apk app-debug.apk androiddebugkey 2>/dev/null || true
-          # 如果 jarsigner 失败，直接用原始 APK
-          if [ ! -f app-signed.apk ]; then
-            cp app-debug.apk app-signed.apk
-          fi
-          ls -la *.apk
+          # 生成 keystore（仅用于签名去 testOnly）
+          keytool -genkey -v -keystore release.keystore -alias release \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass android -keypass android \
+            -dname "CN=Operit Pet, OU=Dev, O=Operit, L=Shanghai, C=CN"
+          
+          # 用 jarsigner 签名 APK
+          jarsigner -keystore release.keystore -storepass android \
+            -keypass android -signedjar app-signed.apk \
+            app/build/outputs/apk/debug/app-debug.apk release
+          
+          # 验证签名
+          jarsigner -verify app-signed.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: operit-pet-signed
-          path: app/build/outputs/apk/debug/app-signed.apk
+          path: app-signed.apk
