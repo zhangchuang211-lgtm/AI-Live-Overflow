@@ -5,13 +5,12 @@ package com.operit.pet
  */
 object Config {
     // Supabase 连接信息
-    const val SUPABASE_URL = "https://ekfxdoewooienrcpngtr.supabase.co"
-    const val SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrZnhkb2V3b29laW5yY3BuZ3RrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0NTkxNTcsImV4cCI6MjEwMTAzNTE1N30.S4EoKEnMDVIf6EwEUXKwGVln6jwxd35j7_JUksYA3uE"
+    const val SUPABASE_URL = "https://ekfxdoewooeinrcpngtk.supabase.co"
+    const val SUPABASE_ANON_KEY = "sb_publishable_YBZ1VvSbhjP99wZvbNIqdw_kspypC3"
 
     // 桌宠显示尺寸（dp）
     const val PET_WIDTH = 180
     const val PET_HEIGHT = 240
-
     // 互动参数
     const val DOUBLE_TAP_TIMEOUT = 300L       // 毫秒
     const val LONG_PRESS_TIMEOUT = 600L       // 毫秒
