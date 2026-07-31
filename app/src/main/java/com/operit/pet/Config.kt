@@ -5,8 +5,8 @@ package com.operit.pet
  */
 object Config {
     // Supabase 连接信息
-    const val SUPABASE_URL = "https://fcoxjcukoglfgcwioeie.supabase.co"
-    const val SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjb3hqY3Vrb2dsZmdjaW9laWUiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc4NTQ0MzExNSwiZXhwIjoyMTAxMDE5MTE1fQ.u5yxR3VEgEV8lKc8tCS1GJrHJvoeym9RaLISNsXJWNA"
+    const val SUPABASE_URL = "https://ekfxdoewooienrcpngtr.supabase.co"
+    const val SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrZnhkb2V3b29laW5yY3BuZ3RrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0NTkxNTcsImV4cCI6MjEwMTAzNTE1N30.S4EoKEnMDVIf6EwEUXKwGVln6jwxd35j7_JUksYA3uE"
 
     // 桌宠显示尺寸（dp）
     const val PET_WIDTH = 180
